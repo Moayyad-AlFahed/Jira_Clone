@@ -1,98 +1,246 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+﻿# Jira Clone API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS backend for a Jira-style project management system. This repository contains the API layer for user authentication, project workspaces, membership management, and the shared database model that supports a larger issue-tracking workflow.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This is not a frontend application. It is the server-side foundation for a Jira-like product built with TypeScript, NestJS, Prisma, PostgreSQL, and Redis.
 
-## Description
+## Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The project models a SaaS-style collaboration platform where users can:
 
-## Project setup
+- register and log in to the system
+- create and manage projects
+- join projects with different roles
+- track project metadata and membership
+- work with a data model designed for sprints, tasks, and statuses
 
-```bash
-$ npm install
+The current implementation focuses on the backend foundation and authenticated project operations. The schema and architecture already include sprint and task entities, but the primary live endpoints in the codebase are the authentication flow and project management APIs.
+
+## Tech stack
+
+- NestJS 11
+- TypeScript
+- PostgreSQL
+- Prisma ORM 7
+- Redis (for refresh-token storage and cache support)
+- Passport + JWT authentication
+- Swagger/OpenAPI documentation
+- class-validator and class-transformer
+- Jest for testing
+
+## Current implemented features
+
+### Authentication
+
+The API exposes these authentication endpoints:
+
+- `POST /auth/register` – create a new user account
+- `POST /auth/login` – validate credentials and return JWT tokens
+- `POST /auth/refresh` – rotate refresh tokens and issue a new token pair
+
+Authentication behavior includes:
+
+- bcrypt password hashing
+- local strategy validation for email/password login
+- JWT access token validation via Passport
+- refresh token rotation and storage support through Redis
+- protected project routes using `JwtAuthGuard`
+
+### Project management
+
+The project module implements the following API:
+
+- `POST /project` – create a new project
+- `GET /project` – list projects for the authenticated user with pagination and optional search
+- `GET /project/:id` – fetch a single project the user belongs to
+- `PATCH /project/:id` – update an existing project
+- `DELETE /project/:id` – delete a project
+- `POST /project/:id/users` – add or update a project membership assignment
+
+Project-level behavior includes:
+
+- authenticated users only
+- project ownership via `ProjectUsers` membership and role `OWNER`
+- per-user access filtering based on membership
+- project response DTOs that avoid returning raw password hashes
+- pagination response format with `data` and `meta`
+
+### Role and membership model
+
+The Prisma model currently supports these project roles:
+
+- `OWNER`
+- `ADMIN`
+- `MEMBER`
+- `VIEWER`
+
+The application enforces project membership checks before project access and updates. The project creator is automatically added as the owner when a project is created.
+
+## Database model
+
+The database schema includes these main entities:
+
+- `User`
+- `Project`
+- `ProjectUsers`
+- `BaseEntity`
+- `Status`
+- `Sprint`
+- `Task`
+
+The schema is designed around Jira-like concepts:
+
+- projects are backed by a shared `BaseEntity` record
+- users belong to projects via `ProjectUsers`
+- tasks belong to a project and can optionally be linked to a sprint and assignee
+- statuses describe task/project lifecycle states
+- project, sprint, and task relationships are set up with cascade/delete rules
+
+## Project structure
+
+```text
+src/
+  app.module.ts
+  main.ts
+  config/
+  common/
+  cache/redis/
+  modules/
+    auth/
+    project/
+    user/
+  prisma/
+prisma/
+  schema.prisma
+  migrations/
 ```
 
-## Compile and run the project
+Key areas:
 
-```bash
-# development
-$ npm run start
+- `src/modules/auth` – registration, login, JWT handling, refresh tokens
+- `src/modules/project` – project CRUD, membership updates, pagination and filtering
+- `src/modules/user` – user-related logic and user data access
+- `src/prisma` – Prisma service and client setup
+- `src/cache/redis` – Redis connection and token storage helpers
+- `src/common` – validation, exceptions, response envelope, pagination utilities
 
-# watch mode
-$ npm run start:dev
+## Environment variables
 
-# production mode
-$ npm run start:prod
+Create a `.env` file in the project root with values like the following:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/jira_clone"
+PORT=3001
+CORS_ORIGIN="http://localhost:3000"
+JWT_ACCESS_SECRET="your-access-secret"
+JWT_REFRESH_SECRET="your-refresh-secret"
+JWT_ACCESS_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_IN="7d"
+CACHE_ENABLED="true"
+REDIS_HOST="127.0.0.1"
+REDIS_PORT="6379"
 ```
 
-## Run tests
+## Getting started
+
+### Install dependencies
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Generate Prisma client and apply migrations
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma generate
+npx prisma migrate dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+If you want to seed the database:
 
-## Resources
+```bash
+npm run prisma:seed
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Run the app
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Development mode
 
-## Support
+```bash
+npm run start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Production build
 
-## Stay in touch
+```bash
+npm run build
+npm run start:prod
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Swagger / API docs
+
+Once the app is running, the API documentation is available at:
+
+```text
+http://localhost:3001/api/docs
+```
+
+Swagger is configured with bearer-auth support and documents the current NestJS API surface.
+
+## Available scripts
+
+```bash
+npm run build
+npm run start
+npm run start:dev
+npm run start:prod
+npm run test
+npm run test:cov
+npm run typecheck
+npm run lint
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:migrate:dev
+npm run prisma:studio
+```
+
+## API conventions
+
+The application uses a global validation pipe and response envelope pattern. Successful responses are wrapped like this:
+
+```json
+{
+  "data": {}
+}
+```
+
+Paginated responses commonly follow this pattern:
+
+```json
+{
+  "data": [],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 0,
+    "totalPages": 0
+  }
+}
+```
+
+## Current project status
+
+This repository is in active backend development for a Jira-inspired workflow. The current codebase includes:
+
+- user authentication and JWT lifecycle
+- protected project endpoints
+- project creation and listing with membership checks
+- Prisma/PostgreSQL schema for project, sprint, task, and status data
+- Redis-backed refresh token support
+- API documentation and validation middleware
+
+The schema and domain model anticipate more advanced issue-management features such as sprint and task workflows, but the immediate implemented API surface is centered on authentication and project operations.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is currently configured as an unpublished private backend API and does not include a public license declaration in the repository.
