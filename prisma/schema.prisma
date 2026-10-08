@@ -1,0 +1,100 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum StatusType {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model Status {
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String?
+  type         StatusType?
+  baseEntities BaseEntity[]
+}
+
+model BaseEntity {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  statusId    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      Status?  @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  project     Project?
+  sprint      Sprint?
+  task        Task?
+}
+
+model Project {
+  id           Int            @id @default(autoincrement())
+  baseEntityId Int            @unique
+  baseEntity   BaseEntity     @relation(fields: [baseEntityId], references: [id], onDelete: Cascade)
+  sprints      Sprint[]
+  tasks        Task[]
+  users        ProjectUsers[]
+}
+
+model Sprint {
+  id           Int        @id @default(autoincrement())
+  projectId    Int
+  baseEntityId Int        @unique
+  startDate    DateTime?
+  endDate      DateTime?
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  baseEntity   BaseEntity @relation(fields: [baseEntityId], references: [id], onDelete: Cascade)
+  tasks        Task[]
+}
+
+model ProjectUsers {
+  id        Int         @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  role      ProjectRole @default(MEMBER)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+}
+
+model Task {
+  id           Int        @id @default(autoincrement())
+  baseEntityId Int        @unique
+  sprintId     Int?
+  projectId    Int
+  userId       Int?
+  dueDate      DateTime?
+  baseEntity   BaseEntity @relation(fields: [baseEntityId], references: [id], onDelete: Cascade)
+  sprint       Sprint?    @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique()        @default("")
+  firstName    String         @default("")
+  lastName     String         @default("")
+  email        String         @unique()  
+  hashPassword String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  projects     ProjectUsers[]
+  tasks        Task[]
+}
