@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { RestoreUserResponseDto } from '../user/dto/restore-user-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -58,7 +59,9 @@ export class AuthController {
   })
   @ApiResponse({
     status: 200,
-    description: 'User authenticated successfully.',
+    type: LoginResponseDto,
+    description:
+      'Returns access and refresh tokens in the standard { data } envelope.',
   })
   @ApiResponse({
     status: 401,

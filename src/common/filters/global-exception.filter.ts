@@ -58,8 +58,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (isPrismaError(exception)) {
       return (
-        mapPrismaError(exception)?.status ?? HttpStatus.INTERNAL_SERVER_ERROR
+        mapPrismaError(exception)?.status ?? HttpStatus.BAD_REQUEST
       );
+    }
+
+    if (this.isJwtError(exception)) {
+      return HttpStatus.UNAUTHORIZED;
     }
 
     return HttpStatus.INTERNAL_SERVER_ERROR;
@@ -99,15 +103,37 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         };
       }
       this.logUnsafe(exception);
-      return this.internalServerError();
+      return {
+        code: 'DATABASE_ERROR',
+        message: 'The request could not be processed',
+      };
     }
 
     if (exception instanceof HttpException) {
       return this.resolveHttpException(exception);
     }
 
+    if (this.isJwtError(exception)) {
+      return {
+        code: 'UNAUTHORIZED',
+        message: 'Invalid or expired token',
+      };
+    }
+
     this.logUnsafe(exception);
     return this.internalServerError();
+  }
+
+  private isJwtError(exception: unknown): boolean {
+    if (typeof exception !== 'object' || exception === null) {
+      return false;
+    }
+    const name = (exception as { name?: string }).name;
+    return (
+      name === 'JsonWebTokenError' ||
+      name === 'TokenExpiredError' ||
+      name === 'NotBeforeError'
+    );
   }
 
   private resolveHttpException(exception: HttpException): ErrorPayload {

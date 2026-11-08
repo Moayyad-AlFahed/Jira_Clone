@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
@@ -102,10 +102,10 @@ export class TokenService {
   verifyRefreshToken(token: string): RefreshTokenPayload {
     try {
       return this.jwtService.verify<RefreshTokenPayload>(token, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-    });
-    } catch (error) {
-      console.log(error,'error');
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
 

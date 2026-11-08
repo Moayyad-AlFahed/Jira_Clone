@@ -158,6 +158,18 @@ async function seedStatuses(): Promise<Map<string, number>> {
   return statusIdsByName;
 }
 
+/** Active user lookup by email (partial unique index; Prisma upsert is not available). */
+async function findActiveUserIdByEmail(
+  email: string,
+): Promise<number | undefined> {
+  const rows = await prisma.$queryRaw<{ id: number }[]>`
+    SELECT id FROM "User"
+    WHERE email = ${email} AND "deletedAt" IS NULL
+    LIMIT 1
+  `;
+  return rows[0]?.id;
+}
+
 async function seedUsers(): Promise<{
   byEmail: Map<string, { id: number; email: string }>;
   byName: Map<string, { id: number; email: string }>;
@@ -166,21 +178,26 @@ async function seedUsers(): Promise<{
   const byName = new Map<string, { id: number; email: string }>();
   const passwordHash = bcrypt.hashSync(TEST_PASSWORD, 10);
   for (const user of users) {
-    const created = await prisma.user.upsert({
-      where: { email: user.email },
-      update: {
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-      create: {
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        hashPassword: passwordHash,
-      },
-    });
+    const existingId = await findActiveUserIdByEmail(user.email);
+
+    const created = existingId
+      ? await prisma.user.update({
+          where: { id: existingId },
+          data: {
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+        })
+      : await prisma.user.create({
+          data: {
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            hashPassword: passwordHash,
+          },
+        });
     byEmail.set(created.email, { id: created.id, email: created.email });
     byName.set(created.firstName.toLowerCase(), {
       id: created.id,

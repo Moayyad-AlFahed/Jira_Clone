@@ -6,12 +6,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { UserService } from '../user/user.service';
+import { UserModule } from '../user/user.module';
 import { TokenService } from './token/token.service';
 import { RedisService } from 'src/cache/redis/redis.service';
 
 @Module({
   imports: [
+    UserModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -25,13 +26,7 @@ import { RedisService } from 'src/cache/redis/redis.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    UserService,
-    LocalStrategy,
-    JwtStrategy,
-    TokenService,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy, TokenService],
   exports: [TokenService],
 })
 export class AuthModule {}

@@ -29,11 +29,13 @@ export type AggregateBaseEntity = {
 export type BaseEntityAvgAggregateOutputType = {
   id: number | null
   statusId: number | null
+  deletedById: number | null
 }
 
 export type BaseEntitySumAggregateOutputType = {
   id: number | null
   statusId: number | null
+  deletedById: number | null
 }
 
 export type BaseEntityMinAggregateOutputType = {
@@ -43,6 +45,8 @@ export type BaseEntityMinAggregateOutputType = {
   statusId: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
+  deletedById: number | null
 }
 
 export type BaseEntityMaxAggregateOutputType = {
@@ -52,6 +56,8 @@ export type BaseEntityMaxAggregateOutputType = {
   statusId: number | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
+  deletedById: number | null
 }
 
 export type BaseEntityCountAggregateOutputType = {
@@ -61,6 +67,8 @@ export type BaseEntityCountAggregateOutputType = {
   statusId: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
+  deletedById: number
   _all: number
 }
 
@@ -68,11 +76,13 @@ export type BaseEntityCountAggregateOutputType = {
 export type BaseEntityAvgAggregateInputType = {
   id?: true
   statusId?: true
+  deletedById?: true
 }
 
 export type BaseEntitySumAggregateInputType = {
   id?: true
   statusId?: true
+  deletedById?: true
 }
 
 export type BaseEntityMinAggregateInputType = {
@@ -82,6 +92,8 @@ export type BaseEntityMinAggregateInputType = {
   statusId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
+  deletedById?: true
 }
 
 export type BaseEntityMaxAggregateInputType = {
@@ -91,6 +103,8 @@ export type BaseEntityMaxAggregateInputType = {
   statusId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
+  deletedById?: true
 }
 
 export type BaseEntityCountAggregateInputType = {
@@ -100,6 +114,8 @@ export type BaseEntityCountAggregateInputType = {
   statusId?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
+  deletedById?: true
   _all?: true
 }
 
@@ -196,6 +212,8 @@ export type BaseEntityGroupByOutputType = {
   statusId: number | null
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
+  deletedById: number | null
   _count: BaseEntityCountAggregateOutputType | null
   _avg: BaseEntityAvgAggregateOutputType | null
   _sum: BaseEntitySumAggregateOutputType | null
@@ -228,7 +246,10 @@ export type BaseEntityWhereInput = {
   statusId?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
   createdAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"BaseEntity"> | Date | string | null
+  deletedById?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
   status?: Prisma.XOR<Prisma.StatusNullableScalarRelationFilter, Prisma.StatusWhereInput> | null
+  deletedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   sprint?: Prisma.XOR<Prisma.SprintNullableScalarRelationFilter, Prisma.SprintWhereInput> | null
   task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
@@ -241,7 +262,10 @@ export type BaseEntityOrderByWithRelationInput = {
   statusId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedById?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.StatusOrderByWithRelationInput
+  deletedBy?: Prisma.UserOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   sprint?: Prisma.SprintOrderByWithRelationInput
   task?: Prisma.TaskOrderByWithRelationInput
@@ -257,7 +281,10 @@ export type BaseEntityWhereUniqueInput = Prisma.AtLeast<{
   statusId?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
   createdAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"BaseEntity"> | Date | string | null
+  deletedById?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
   status?: Prisma.XOR<Prisma.StatusNullableScalarRelationFilter, Prisma.StatusWhereInput> | null
+  deletedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
   sprint?: Prisma.XOR<Prisma.SprintNullableScalarRelationFilter, Prisma.SprintWhereInput> | null
   task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
@@ -270,6 +297,8 @@ export type BaseEntityOrderByWithAggregationInput = {
   statusId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedById?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.BaseEntityCountOrderByAggregateInput
   _avg?: Prisma.BaseEntityAvgOrderByAggregateInput
   _max?: Prisma.BaseEntityMaxOrderByAggregateInput
@@ -287,6 +316,8 @@ export type BaseEntityScalarWhereWithAggregatesInput = {
   statusId?: Prisma.IntNullableWithAggregatesFilter<"BaseEntity"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BaseEntity"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BaseEntity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BaseEntity"> | Date | string | null
+  deletedById?: Prisma.IntNullableWithAggregatesFilter<"BaseEntity"> | number | null
 }
 
 export type BaseEntityCreateInput = {
@@ -294,7 +325,9 @@ export type BaseEntityCreateInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   status?: Prisma.StatusCreateNestedOneWithoutBaseEntitiesInput
+  deletedBy?: Prisma.UserCreateNestedOneWithoutDeletedBaseEntitiesInput
   project?: Prisma.ProjectCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskCreateNestedOneWithoutBaseEntityInput
@@ -307,6 +340,8 @@ export type BaseEntityUncheckedCreateInput = {
   statusId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
   project?: Prisma.ProjectUncheckedCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintUncheckedCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskUncheckedCreateNestedOneWithoutBaseEntityInput
@@ -317,7 +352,9 @@ export type BaseEntityUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StatusUpdateOneWithoutBaseEntitiesNestedInput
+  deletedBy?: Prisma.UserUpdateOneWithoutDeletedBaseEntitiesNestedInput
   project?: Prisma.ProjectUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUpdateOneWithoutBaseEntityNestedInput
@@ -330,6 +367,8 @@ export type BaseEntityUncheckedUpdateInput = {
   statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   project?: Prisma.ProjectUncheckedUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUncheckedUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUncheckedUpdateOneWithoutBaseEntityNestedInput
@@ -342,6 +381,8 @@ export type BaseEntityCreateManyInput = {
   statusId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
 }
 
 export type BaseEntityUpdateManyMutationInput = {
@@ -349,6 +390,7 @@ export type BaseEntityUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type BaseEntityUncheckedUpdateManyInput = {
@@ -358,6 +400,8 @@ export type BaseEntityUncheckedUpdateManyInput = {
   statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BaseEntityListRelationFilter = {
@@ -377,11 +421,14 @@ export type BaseEntityCountOrderByAggregateInput = {
   statusId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedById?: Prisma.SortOrder
 }
 
 export type BaseEntityAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   statusId?: Prisma.SortOrder
+  deletedById?: Prisma.SortOrder
 }
 
 export type BaseEntityMaxOrderByAggregateInput = {
@@ -391,6 +438,8 @@ export type BaseEntityMaxOrderByAggregateInput = {
   statusId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedById?: Prisma.SortOrder
 }
 
 export type BaseEntityMinOrderByAggregateInput = {
@@ -400,11 +449,14 @@ export type BaseEntityMinOrderByAggregateInput = {
   statusId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedById?: Prisma.SortOrder
 }
 
 export type BaseEntitySumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   statusId?: Prisma.SortOrder
+  deletedById?: Prisma.SortOrder
 }
 
 export type BaseEntityScalarRelationFilter = {
@@ -458,6 +510,10 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -508,11 +564,55 @@ export type BaseEntityUpdateOneRequiredWithoutTaskNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BaseEntityUpdateToOneWithWhereWithoutTaskInput, Prisma.BaseEntityUpdateWithoutTaskInput>, Prisma.BaseEntityUncheckedUpdateWithoutTaskInput>
 }
 
+export type BaseEntityCreateNestedManyWithoutDeletedByInput = {
+  create?: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput> | Prisma.BaseEntityCreateWithoutDeletedByInput[] | Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput[]
+  connectOrCreate?: Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput | Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput[]
+  createMany?: Prisma.BaseEntityCreateManyDeletedByInputEnvelope
+  connect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+}
+
+export type BaseEntityUncheckedCreateNestedManyWithoutDeletedByInput = {
+  create?: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput> | Prisma.BaseEntityCreateWithoutDeletedByInput[] | Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput[]
+  connectOrCreate?: Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput | Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput[]
+  createMany?: Prisma.BaseEntityCreateManyDeletedByInputEnvelope
+  connect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+}
+
+export type BaseEntityUpdateManyWithoutDeletedByNestedInput = {
+  create?: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput> | Prisma.BaseEntityCreateWithoutDeletedByInput[] | Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput[]
+  connectOrCreate?: Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput | Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput[]
+  upsert?: Prisma.BaseEntityUpsertWithWhereUniqueWithoutDeletedByInput | Prisma.BaseEntityUpsertWithWhereUniqueWithoutDeletedByInput[]
+  createMany?: Prisma.BaseEntityCreateManyDeletedByInputEnvelope
+  set?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  disconnect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  delete?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  connect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  update?: Prisma.BaseEntityUpdateWithWhereUniqueWithoutDeletedByInput | Prisma.BaseEntityUpdateWithWhereUniqueWithoutDeletedByInput[]
+  updateMany?: Prisma.BaseEntityUpdateManyWithWhereWithoutDeletedByInput | Prisma.BaseEntityUpdateManyWithWhereWithoutDeletedByInput[]
+  deleteMany?: Prisma.BaseEntityScalarWhereInput | Prisma.BaseEntityScalarWhereInput[]
+}
+
+export type BaseEntityUncheckedUpdateManyWithoutDeletedByNestedInput = {
+  create?: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput> | Prisma.BaseEntityCreateWithoutDeletedByInput[] | Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput[]
+  connectOrCreate?: Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput | Prisma.BaseEntityCreateOrConnectWithoutDeletedByInput[]
+  upsert?: Prisma.BaseEntityUpsertWithWhereUniqueWithoutDeletedByInput | Prisma.BaseEntityUpsertWithWhereUniqueWithoutDeletedByInput[]
+  createMany?: Prisma.BaseEntityCreateManyDeletedByInputEnvelope
+  set?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  disconnect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  delete?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  connect?: Prisma.BaseEntityWhereUniqueInput | Prisma.BaseEntityWhereUniqueInput[]
+  update?: Prisma.BaseEntityUpdateWithWhereUniqueWithoutDeletedByInput | Prisma.BaseEntityUpdateWithWhereUniqueWithoutDeletedByInput[]
+  updateMany?: Prisma.BaseEntityUpdateManyWithWhereWithoutDeletedByInput | Prisma.BaseEntityUpdateManyWithWhereWithoutDeletedByInput[]
+  deleteMany?: Prisma.BaseEntityScalarWhereInput | Prisma.BaseEntityScalarWhereInput[]
+}
+
 export type BaseEntityCreateWithoutStatusInput = {
   name: string
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedBy?: Prisma.UserCreateNestedOneWithoutDeletedBaseEntitiesInput
   project?: Prisma.ProjectCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskCreateNestedOneWithoutBaseEntityInput
@@ -524,6 +624,8 @@ export type BaseEntityUncheckedCreateWithoutStatusInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
   project?: Prisma.ProjectUncheckedCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintUncheckedCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskUncheckedCreateNestedOneWithoutBaseEntityInput
@@ -565,6 +667,8 @@ export type BaseEntityScalarWhereInput = {
   statusId?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
   createdAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BaseEntity"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"BaseEntity"> | Date | string | null
+  deletedById?: Prisma.IntNullableFilter<"BaseEntity"> | number | null
 }
 
 export type BaseEntityCreateWithoutProjectInput = {
@@ -572,7 +676,9 @@ export type BaseEntityCreateWithoutProjectInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   status?: Prisma.StatusCreateNestedOneWithoutBaseEntitiesInput
+  deletedBy?: Prisma.UserCreateNestedOneWithoutDeletedBaseEntitiesInput
   sprint?: Prisma.SprintCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskCreateNestedOneWithoutBaseEntityInput
 }
@@ -584,6 +690,8 @@ export type BaseEntityUncheckedCreateWithoutProjectInput = {
   statusId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
   sprint?: Prisma.SprintUncheckedCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskUncheckedCreateNestedOneWithoutBaseEntityInput
 }
@@ -609,7 +717,9 @@ export type BaseEntityUpdateWithoutProjectInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StatusUpdateOneWithoutBaseEntitiesNestedInput
+  deletedBy?: Prisma.UserUpdateOneWithoutDeletedBaseEntitiesNestedInput
   sprint?: Prisma.SprintUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUpdateOneWithoutBaseEntityNestedInput
 }
@@ -621,6 +731,8 @@ export type BaseEntityUncheckedUpdateWithoutProjectInput = {
   statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sprint?: Prisma.SprintUncheckedUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUncheckedUpdateOneWithoutBaseEntityNestedInput
 }
@@ -630,7 +742,9 @@ export type BaseEntityCreateWithoutSprintInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   status?: Prisma.StatusCreateNestedOneWithoutBaseEntitiesInput
+  deletedBy?: Prisma.UserCreateNestedOneWithoutDeletedBaseEntitiesInput
   project?: Prisma.ProjectCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskCreateNestedOneWithoutBaseEntityInput
 }
@@ -642,6 +756,8 @@ export type BaseEntityUncheckedCreateWithoutSprintInput = {
   statusId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
   project?: Prisma.ProjectUncheckedCreateNestedOneWithoutBaseEntityInput
   task?: Prisma.TaskUncheckedCreateNestedOneWithoutBaseEntityInput
 }
@@ -667,7 +783,9 @@ export type BaseEntityUpdateWithoutSprintInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StatusUpdateOneWithoutBaseEntitiesNestedInput
+  deletedBy?: Prisma.UserUpdateOneWithoutDeletedBaseEntitiesNestedInput
   project?: Prisma.ProjectUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUpdateOneWithoutBaseEntityNestedInput
 }
@@ -679,6 +797,8 @@ export type BaseEntityUncheckedUpdateWithoutSprintInput = {
   statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   project?: Prisma.ProjectUncheckedUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUncheckedUpdateOneWithoutBaseEntityNestedInput
 }
@@ -688,7 +808,9 @@ export type BaseEntityCreateWithoutTaskInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   status?: Prisma.StatusCreateNestedOneWithoutBaseEntitiesInput
+  deletedBy?: Prisma.UserCreateNestedOneWithoutDeletedBaseEntitiesInput
   project?: Prisma.ProjectCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintCreateNestedOneWithoutBaseEntityInput
 }
@@ -700,6 +822,8 @@ export type BaseEntityUncheckedCreateWithoutTaskInput = {
   statusId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
   project?: Prisma.ProjectUncheckedCreateNestedOneWithoutBaseEntityInput
   sprint?: Prisma.SprintUncheckedCreateNestedOneWithoutBaseEntityInput
 }
@@ -725,7 +849,9 @@ export type BaseEntityUpdateWithoutTaskInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.StatusUpdateOneWithoutBaseEntitiesNestedInput
+  deletedBy?: Prisma.UserUpdateOneWithoutDeletedBaseEntitiesNestedInput
   project?: Prisma.ProjectUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUpdateOneWithoutBaseEntityNestedInput
 }
@@ -737,8 +863,61 @@ export type BaseEntityUncheckedUpdateWithoutTaskInput = {
   statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   project?: Prisma.ProjectUncheckedUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUncheckedUpdateOneWithoutBaseEntityNestedInput
+}
+
+export type BaseEntityCreateWithoutDeletedByInput = {
+  name: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  status?: Prisma.StatusCreateNestedOneWithoutBaseEntitiesInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBaseEntityInput
+  sprint?: Prisma.SprintCreateNestedOneWithoutBaseEntityInput
+  task?: Prisma.TaskCreateNestedOneWithoutBaseEntityInput
+}
+
+export type BaseEntityUncheckedCreateWithoutDeletedByInput = {
+  id?: number
+  name: string
+  description?: string | null
+  statusId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  project?: Prisma.ProjectUncheckedCreateNestedOneWithoutBaseEntityInput
+  sprint?: Prisma.SprintUncheckedCreateNestedOneWithoutBaseEntityInput
+  task?: Prisma.TaskUncheckedCreateNestedOneWithoutBaseEntityInput
+}
+
+export type BaseEntityCreateOrConnectWithoutDeletedByInput = {
+  where: Prisma.BaseEntityWhereUniqueInput
+  create: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput>
+}
+
+export type BaseEntityCreateManyDeletedByInputEnvelope = {
+  data: Prisma.BaseEntityCreateManyDeletedByInput | Prisma.BaseEntityCreateManyDeletedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type BaseEntityUpsertWithWhereUniqueWithoutDeletedByInput = {
+  where: Prisma.BaseEntityWhereUniqueInput
+  update: Prisma.XOR<Prisma.BaseEntityUpdateWithoutDeletedByInput, Prisma.BaseEntityUncheckedUpdateWithoutDeletedByInput>
+  create: Prisma.XOR<Prisma.BaseEntityCreateWithoutDeletedByInput, Prisma.BaseEntityUncheckedCreateWithoutDeletedByInput>
+}
+
+export type BaseEntityUpdateWithWhereUniqueWithoutDeletedByInput = {
+  where: Prisma.BaseEntityWhereUniqueInput
+  data: Prisma.XOR<Prisma.BaseEntityUpdateWithoutDeletedByInput, Prisma.BaseEntityUncheckedUpdateWithoutDeletedByInput>
+}
+
+export type BaseEntityUpdateManyWithWhereWithoutDeletedByInput = {
+  where: Prisma.BaseEntityScalarWhereInput
+  data: Prisma.XOR<Prisma.BaseEntityUpdateManyMutationInput, Prisma.BaseEntityUncheckedUpdateManyWithoutDeletedByInput>
 }
 
 export type BaseEntityCreateManyStatusInput = {
@@ -747,6 +926,8 @@ export type BaseEntityCreateManyStatusInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedById?: number | null
 }
 
 export type BaseEntityUpdateWithoutStatusInput = {
@@ -754,6 +935,8 @@ export type BaseEntityUpdateWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.UserUpdateOneWithoutDeletedBaseEntitiesNestedInput
   project?: Prisma.ProjectUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUpdateOneWithoutBaseEntityNestedInput
@@ -765,6 +948,8 @@ export type BaseEntityUncheckedUpdateWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   project?: Prisma.ProjectUncheckedUpdateOneWithoutBaseEntityNestedInput
   sprint?: Prisma.SprintUncheckedUpdateOneWithoutBaseEntityNestedInput
   task?: Prisma.TaskUncheckedUpdateOneWithoutBaseEntityNestedInput
@@ -776,6 +961,53 @@ export type BaseEntityUncheckedUpdateManyWithoutStatusInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+}
+
+export type BaseEntityCreateManyDeletedByInput = {
+  id?: number
+  name: string
+  description?: string | null
+  statusId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type BaseEntityUpdateWithoutDeletedByInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StatusUpdateOneWithoutBaseEntitiesNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBaseEntityNestedInput
+  sprint?: Prisma.SprintUpdateOneWithoutBaseEntityNestedInput
+  task?: Prisma.TaskUpdateOneWithoutBaseEntityNestedInput
+}
+
+export type BaseEntityUncheckedUpdateWithoutDeletedByInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  project?: Prisma.ProjectUncheckedUpdateOneWithoutBaseEntityNestedInput
+  sprint?: Prisma.SprintUncheckedUpdateOneWithoutBaseEntityNestedInput
+  task?: Prisma.TaskUncheckedUpdateOneWithoutBaseEntityNestedInput
+}
+
+export type BaseEntityUncheckedUpdateManyWithoutDeletedByInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statusId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -787,7 +1019,10 @@ export type BaseEntitySelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   statusId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
+  deletedById?: boolean
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
   project?: boolean | Prisma.BaseEntity$projectArgs<ExtArgs>
   sprint?: boolean | Prisma.BaseEntity$sprintArgs<ExtArgs>
   task?: boolean | Prisma.BaseEntity$taskArgs<ExtArgs>
@@ -800,7 +1035,10 @@ export type BaseEntitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   statusId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
+  deletedById?: boolean
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
 }, ExtArgs["result"]["baseEntity"]>
 
 export type BaseEntitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -810,7 +1048,10 @@ export type BaseEntitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   statusId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
+  deletedById?: boolean
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
 }, ExtArgs["result"]["baseEntity"]>
 
 export type BaseEntitySelectScalar = {
@@ -820,26 +1061,32 @@ export type BaseEntitySelectScalar = {
   statusId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
+  deletedById?: boolean
 }
 
-export type BaseEntityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "statusId" | "createdAt" | "updatedAt", ExtArgs["result"]["baseEntity"]>
+export type BaseEntityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "statusId" | "createdAt" | "updatedAt" | "deletedAt" | "deletedById", ExtArgs["result"]["baseEntity"]>
 export type BaseEntityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
   project?: boolean | Prisma.BaseEntity$projectArgs<ExtArgs>
   sprint?: boolean | Prisma.BaseEntity$sprintArgs<ExtArgs>
   task?: boolean | Prisma.BaseEntity$taskArgs<ExtArgs>
 }
 export type BaseEntityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
 }
 export type BaseEntityIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   status?: boolean | Prisma.BaseEntity$statusArgs<ExtArgs>
+  deletedBy?: boolean | Prisma.BaseEntity$deletedByArgs<ExtArgs>
 }
 
 export type $BaseEntityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BaseEntity"
   objects: {
     status: Prisma.$StatusPayload<ExtArgs> | null
+    deletedBy: Prisma.$UserPayload<ExtArgs> | null
     project: Prisma.$ProjectPayload<ExtArgs> | null
     sprint: Prisma.$SprintPayload<ExtArgs> | null
     task: Prisma.$TaskPayload<ExtArgs> | null
@@ -851,6 +1098,8 @@ export type $BaseEntityPayload<ExtArgs extends runtime.Types.Extensions.Internal
     statusId: number | null
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
+    deletedById: number | null
   }, ExtArgs["result"]["baseEntity"]>
   composites: {}
 }
@@ -1246,6 +1495,7 @@ readonly fields: BaseEntityFieldRefs;
 export interface Prisma__BaseEntityClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   status<T extends Prisma.BaseEntity$statusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseEntity$statusArgs<ExtArgs>>): Prisma.Prisma__StatusClient<runtime.Types.Result.GetResult<Prisma.$StatusPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  deletedBy<T extends Prisma.BaseEntity$deletedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseEntity$deletedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.BaseEntity$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseEntity$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sprint<T extends Prisma.BaseEntity$sprintArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseEntity$sprintArgs<ExtArgs>>): Prisma.Prisma__SprintClient<runtime.Types.Result.GetResult<Prisma.$SprintPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   task<T extends Prisma.BaseEntity$taskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BaseEntity$taskArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -1284,6 +1534,8 @@ export interface BaseEntityFieldRefs {
   readonly statusId: Prisma.FieldRef<"BaseEntity", 'Int'>
   readonly createdAt: Prisma.FieldRef<"BaseEntity", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BaseEntity", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"BaseEntity", 'DateTime'>
+  readonly deletedById: Prisma.FieldRef<"BaseEntity", 'Int'>
 }
     
 
@@ -1701,6 +1953,25 @@ export type BaseEntity$statusArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.StatusInclude<ExtArgs> | null
   where?: Prisma.StatusWhereInput
+}
+
+/**
+ * BaseEntity.deletedBy
+ */
+export type BaseEntity$deletedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

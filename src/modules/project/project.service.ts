@@ -14,12 +14,11 @@ import {
   PaginatedProjectResponseDto,
   ProjectResponseDto,
 } from './dto/project-response.dto';
+import { ProjectMemberListItemDto } from './dto/project-member-list-item.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { paginate } from '../../common/http/pagination';
-import {
-  activeBaseEntityWhere,
-  activeUserWhere,
-} from '../../common/prisma/soft-delete.where';
+import { activeBaseEntityWhere } from '../../common/prisma/soft-delete.where';
+import { findActiveUserById } from '../../common/prisma/active-user.queries';
 import {
   collectProjectChildBaseEntityIds,
   restoreBaseEntity,
@@ -58,6 +57,8 @@ export class ProjectService {
     createProjectDto: CreateProjectDto,
     userId: number,
   ): Promise<ProjectResponseDto> {
+    console.log('createProjectDto', createProjectDto);
+    console.log('userId', userId);
     await this.ensureStatusExists(createProjectDto.statusId);
 
     const projectId = await this.prisma.$transaction(async (transaction) => {
@@ -76,6 +77,8 @@ export class ProjectService {
           },
         },
       });
+
+      console.log('project', project);
 
       return project.id;
     });
@@ -167,6 +170,47 @@ export class ProjectService {
 
   async testProjectMembership(projectId: number, userId: number) {
     return { isMember: await this.ensureProjectMember(projectId, userId) };
+  }
+
+  async listMembers(
+    projectId: number,
+    userId: number,
+  ): Promise<ProjectMemberListItemDto[]> {
+    if (!(await this.ensureProjectMember(projectId, userId))) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const rows = await this.prisma.$queryRaw<
+      {
+        userId: number;
+        role: ProjectRole;
+        membershipCreatedAt: Date;
+        firstName: string;
+        lastName: string;
+        email: string;
+      }[]
+    >`
+      SELECT
+        pu."userId" AS "userId",
+        pu.role AS "role",
+        pu."createdAt" AS "membershipCreatedAt",
+        u."firstName" AS "firstName",
+        u."lastName" AS "lastName",
+        u.email AS "email"
+      FROM "ProjectUsers" pu
+      INNER JOIN "User" u ON u.id = pu."userId"
+      WHERE pu."projectId" = ${projectId}
+        AND u."deletedAt" IS NULL
+      ORDER BY pu."createdAt" ASC
+    `;
+
+    return rows.map((row) => ({
+      userId: row.userId,
+      name: `${row.firstName} ${row.lastName}`.trim(),
+      email: row.email,
+      role: row.role,
+      membershipCreatedAt: row.membershipCreatedAt,
+    }));
   }
 
   async update(
@@ -269,6 +313,21 @@ export class ProjectService {
       throw new NotFoundException('Project not found');
     }
 
+    const actorMembership = await this.prisma.projectUsers.findUnique({
+      where: {
+        projectId_userId: { projectId, userId: currentUserId },
+      },
+      select: { role: true },
+    });
+
+    const canAssign =
+      actorMembership?.role === ProjectRole.OWNER ||
+      actorMembership?.role === ProjectRole.ADMIN;
+
+    if (!canAssign) {
+      throw new ForbiddenException('Action not allowed');
+    }
+
     const existingMembership = await this.prisma.projectUsers.findUnique({
       where: {
         projectId_userId: {
@@ -279,22 +338,14 @@ export class ProjectService {
       select: { role: true },
     });
 
-    const isOwnerOrAdmin =
-      existingMembership.role === 'ADMIN' || existingMembership.role === 'OWNER'
-        ? true
-        : false;
-
     if (existingMembership?.role === ProjectRole.OWNER) {
       throw new ForbiddenException('Project owner role cannot be changed');
     }
 
-    if(!isOwnerOrAdmin) {
-      throw new ForbiddenException('Action not allowed');
-    }
-
-    const user = await this.prisma.user.findFirst({
-      where: { id: assignProjectUserDto.userId, ...activeUserWhere },
-    });
+    const user = await findActiveUserById(
+      this.prisma,
+      assignProjectUserDto.userId,
+    );
 
     if (!user) {
       throw new NotFoundException('User not found');

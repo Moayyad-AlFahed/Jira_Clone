@@ -458,10 +458,6 @@ export type SprintUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.SprintScalarWhereInput | Prisma.SprintScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type SprintCreateNestedOneWithoutTasksInput = {
   create?: Prisma.XOR<Prisma.SprintCreateWithoutTasksInput, Prisma.SprintUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.SprintCreateOrConnectWithoutTasksInput

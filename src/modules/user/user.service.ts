@@ -13,7 +13,11 @@ import { LoginDto } from '../auth/dto/login.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { paginate } from '../../common/http/pagination';
 import { PaginatedUserResponseDto } from './dto/user-response.dto';
-import { activeUserWhere } from '../../common/prisma/soft-delete.where';
+import {
+  findActiveUserByEmail,
+  findActiveUserById,
+  findActiveUserByUsername,
+} from '../../common/prisma/active-user.queries';
 import {
   restoreUser,
   softDeleteUser,
@@ -29,9 +33,7 @@ export class UserService {
   withDetails = { projects: true, tasks: true };
 
   async findActiveByEmail(email: string) {
-    return this.prisma.user.findFirst({
-      where: { email, ...activeUserWhere },
-    });
+    return findActiveUserByEmail(this.prisma, email);
   }
 
   /** @deprecated Use findActiveByEmail — kept for call-site clarity during migration. */
@@ -40,10 +42,7 @@ export class UserService {
   }
 
   async findActiveByUsername(username: string) {
-    return this.prisma.user.findFirst({
-      where: { username, ...activeUserWhere },
-      include: this.withDetails,
-    });
+    return findActiveUserByUsername(this.prisma, username);
   }
 
   async findByUsername(username: string) {
@@ -51,10 +50,7 @@ export class UserService {
   }
 
   async findActiveById(id: number) {
-    return this.prisma.user.findFirst({
-      where: { id, ...activeUserWhere },
-      include: this.withDetails,
-    });
+    return findActiveUserById(this.prisma, id);
   }
 
   async findById(id: number) {
@@ -75,37 +71,68 @@ export class UserService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
     const search = query.search?.trim();
-    const where: Prisma.UserWhereInput = {
-      ...activeUserWhere,
-      ...(search
-        ? {
-            OR: [
-              { username: { contains: search, mode: 'insensitive' } },
-              { email: { contains: search, mode: 'insensitive' } },
-              { firstName: { contains: search, mode: 'insensitive' } },
-              { lastName: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-    };
+    const offset = (page - 1) * limit;
+    const pattern = search ? `%${search}%` : null;
 
-    const [users, total] = await Promise.all([
-      this.prisma.user.findMany({
-        where,
-        select: {
-          id: true,
-          username: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          createdAt: true,
-        },
-        orderBy: { id: 'desc' },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      this.prisma.user.count({ where }),
-    ]);
+    const users = pattern
+      ? await this.prisma.$queryRaw<
+          {
+            id: number;
+            username: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            createdAt: Date;
+          }[]
+        >`
+          SELECT id, username, "firstName", "lastName", email, "createdAt"
+          FROM "User"
+          WHERE "deletedAt" IS NULL
+            AND (
+              username ILIKE ${pattern}
+              OR email ILIKE ${pattern}
+              OR "firstName" ILIKE ${pattern}
+              OR "lastName" ILIKE ${pattern}
+            )
+          ORDER BY id DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `
+      : await this.prisma.$queryRaw<
+          {
+            id: number;
+            username: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            createdAt: Date;
+          }[]
+        >`
+          SELECT id, username, "firstName", "lastName", email, "createdAt"
+          FROM "User"
+          WHERE "deletedAt" IS NULL
+          ORDER BY id DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `;
+
+    const countRows = pattern
+      ? await this.prisma.$queryRaw<{ count: bigint }[]>`
+          SELECT COUNT(*)::bigint AS count
+          FROM "User"
+          WHERE "deletedAt" IS NULL
+            AND (
+              username ILIKE ${pattern}
+              OR email ILIKE ${pattern}
+              OR "firstName" ILIKE ${pattern}
+              OR "lastName" ILIKE ${pattern}
+            )
+        `
+      : await this.prisma.$queryRaw<{ count: bigint }[]>`
+          SELECT COUNT(*)::bigint AS count
+          FROM "User"
+          WHERE "deletedAt" IS NULL
+        `;
+
+    const total = Number(countRows[0]?.count ?? 0);
 
     return paginate(users, page, limit, total);
   }

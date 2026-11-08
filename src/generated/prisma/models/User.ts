@@ -43,6 +43,7 @@ export type UserMinAggregateOutputType = {
   hashPassword: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type UserMaxAggregateOutputType = {
   hashPassword: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  deletedAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -65,6 +67,7 @@ export type UserCountAggregateOutputType = {
   hashPassword: number
   createdAt: number
   updatedAt: number
+  deletedAt: number
   _all: number
 }
 
@@ -86,6 +89,7 @@ export type UserMinAggregateInputType = {
   hashPassword?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -97,6 +101,7 @@ export type UserMaxAggregateInputType = {
   hashPassword?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type UserCountAggregateInputType = {
   hashPassword?: true
   createdAt?: true
   updatedAt?: true
+  deletedAt?: true
   _all?: true
 }
 
@@ -206,6 +212,7 @@ export type UserGroupByOutputType = {
   hashPassword: string
   createdAt: Date
   updatedAt: Date
+  deletedAt: Date | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -240,8 +247,10 @@ export type UserWhereInput = {
   hashPassword?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   projects?: Prisma.ProjectUsersListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
+  deletedBaseEntities?: Prisma.BaseEntityListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -253,25 +262,29 @@ export type UserOrderByWithRelationInput = {
   hashPassword?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   projects?: Prisma.ProjectUsersOrderByRelationAggregateInput
   tasks?: Prisma.TaskOrderByRelationAggregateInput
+  deletedBaseEntities?: Prisma.BaseEntityOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  username?: string
-  email?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  username?: Prisma.StringFilter<"User"> | string
   firstName?: Prisma.StringFilter<"User"> | string
   lastName?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
   hashPassword?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   projects?: Prisma.ProjectUsersListRelationFilter
   tasks?: Prisma.TaskListRelationFilter
-}, "id" | "username" | "email">
+  deletedBaseEntities?: Prisma.BaseEntityListRelationFilter
+}, "id">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -282,6 +295,7 @@ export type UserOrderByWithAggregationInput = {
   hashPassword?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -301,6 +315,7 @@ export type UserScalarWhereWithAggregatesInput = {
   hashPassword?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -311,8 +326,10 @@ export type UserCreateInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   projects?: Prisma.ProjectUsersCreateNestedManyWithoutUserInput
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -324,8 +341,10 @@ export type UserUncheckedCreateInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   projects?: Prisma.ProjectUsersUncheckedCreateNestedManyWithoutUserInput
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserUpdateInput = {
@@ -336,8 +355,10 @@ export type UserUpdateInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projects?: Prisma.ProjectUsersUpdateManyWithoutUserNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUpdateManyWithoutDeletedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -349,8 +370,10 @@ export type UserUncheckedUpdateInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projects?: Prisma.ProjectUsersUncheckedUpdateManyWithoutUserNestedInput
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedUpdateManyWithoutDeletedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -362,6 +385,7 @@ export type UserCreateManyInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -372,6 +396,7 @@ export type UserUpdateManyMutationInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -383,16 +408,17 @@ export type UserUncheckedUpdateManyInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -404,6 +430,7 @@ export type UserCountOrderByAggregateInput = {
   hashPassword?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -419,6 +446,7 @@ export type UserMaxOrderByAggregateInput = {
   hashPassword?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -430,10 +458,27 @@ export type UserMinOrderByAggregateInput = {
   hashPassword?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+}
+
+export type UserCreateNestedOneWithoutDeletedBaseEntitiesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedCreateWithoutDeletedBaseEntitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeletedBaseEntitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutDeletedBaseEntitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedCreateWithoutDeletedBaseEntitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeletedBaseEntitiesInput
+  upsert?: Prisma.UserUpsertWithoutDeletedBaseEntitiesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDeletedBaseEntitiesInput, Prisma.UserUpdateWithoutDeletedBaseEntitiesInput>, Prisma.UserUncheckedUpdateWithoutDeletedBaseEntitiesInput>
 }
 
 export type UserCreateNestedOneWithoutProjectsInput = {
@@ -466,6 +511,76 @@ export type UserUpdateOneWithoutTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTasksInput, Prisma.UserUpdateWithoutTasksInput>, Prisma.UserUncheckedUpdateWithoutTasksInput>
 }
 
+export type UserCreateWithoutDeletedBaseEntitiesInput = {
+  username?: string
+  firstName?: string
+  lastName?: string
+  email: string
+  hashPassword: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  projects?: Prisma.ProjectUsersCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutDeletedBaseEntitiesInput = {
+  id?: number
+  username?: string
+  firstName?: string
+  lastName?: string
+  email: string
+  hashPassword: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  projects?: Prisma.ProjectUsersUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutDeletedBaseEntitiesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedCreateWithoutDeletedBaseEntitiesInput>
+}
+
+export type UserUpsertWithoutDeletedBaseEntitiesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedUpdateWithoutDeletedBaseEntitiesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedCreateWithoutDeletedBaseEntitiesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDeletedBaseEntitiesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDeletedBaseEntitiesInput, Prisma.UserUncheckedUpdateWithoutDeletedBaseEntitiesInput>
+}
+
+export type UserUpdateWithoutDeletedBaseEntitiesInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  projects?: Prisma.ProjectUsersUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDeletedBaseEntitiesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  projects?: Prisma.ProjectUsersUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutProjectsInput = {
   username?: string
   firstName?: string
@@ -474,7 +589,9 @@ export type UserCreateWithoutProjectsInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   tasks?: Prisma.TaskCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserUncheckedCreateWithoutProjectsInput = {
@@ -486,7 +603,9 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserCreateOrConnectWithoutProjectsInput = {
@@ -513,7 +632,9 @@ export type UserUpdateWithoutProjectsInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tasks?: Prisma.TaskUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUpdateManyWithoutDeletedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -525,7 +646,9 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tasks?: Prisma.TaskUncheckedUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedUpdateManyWithoutDeletedByNestedInput
 }
 
 export type UserCreateWithoutTasksInput = {
@@ -536,7 +659,9 @@ export type UserCreateWithoutTasksInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   projects?: Prisma.ProjectUsersCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserUncheckedCreateWithoutTasksInput = {
@@ -548,7 +673,9 @@ export type UserUncheckedCreateWithoutTasksInput = {
   hashPassword: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  deletedAt?: Date | string | null
   projects?: Prisma.ProjectUsersUncheckedCreateNestedManyWithoutUserInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedCreateNestedManyWithoutDeletedByInput
 }
 
 export type UserCreateOrConnectWithoutTasksInput = {
@@ -575,7 +702,9 @@ export type UserUpdateWithoutTasksInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projects?: Prisma.ProjectUsersUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUpdateManyWithoutDeletedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTasksInput = {
@@ -587,7 +716,9 @@ export type UserUncheckedUpdateWithoutTasksInput = {
   hashPassword?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projects?: Prisma.ProjectUsersUncheckedUpdateManyWithoutUserNestedInput
+  deletedBaseEntities?: Prisma.BaseEntityUncheckedUpdateManyWithoutDeletedByNestedInput
 }
 
 
@@ -598,11 +729,13 @@ export type UserUncheckedUpdateWithoutTasksInput = {
 export type UserCountOutputType = {
   projects: number
   tasks: number
+  deletedBaseEntities: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | UserCountOutputTypeCountProjectsArgs
   tasks?: boolean | UserCountOutputTypeCountTasksArgs
+  deletedBaseEntities?: boolean | UserCountOutputTypeCountDeletedBaseEntitiesArgs
 }
 
 /**
@@ -629,6 +762,13 @@ export type UserCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Exte
   where?: Prisma.TaskWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDeletedBaseEntitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BaseEntityWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -639,8 +779,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   hashPassword?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
+  deletedBaseEntities?: boolean | Prisma.User$deletedBaseEntitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -653,6 +795,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   hashPassword?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -664,6 +807,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   hashPassword?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -675,12 +819,14 @@ export type UserSelectScalar = {
   hashPassword?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  deletedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "hashPassword" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "firstName" | "lastName" | "email" | "hashPassword" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
+  deletedBaseEntities?: boolean | Prisma.User$deletedBaseEntitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -691,6 +837,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     projects: Prisma.$ProjectUsersPayload<ExtArgs>[]
     tasks: Prisma.$TaskPayload<ExtArgs>[]
+    deletedBaseEntities: Prisma.$BaseEntityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -701,6 +848,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     hashPassword: string
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1097,6 +1245,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectUsersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tasks<T extends Prisma.User$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deletedBaseEntities<T extends Prisma.User$deletedBaseEntitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deletedBaseEntitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BaseEntityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1134,6 +1283,7 @@ export interface UserFieldRefs {
   readonly hashPassword: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly deletedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
@@ -1572,6 +1722,30 @@ export type User$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
+}
+
+/**
+ * User.deletedBaseEntities
+ */
+export type User$deletedBaseEntitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BaseEntity
+   */
+  select?: Prisma.BaseEntitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BaseEntity
+   */
+  omit?: Prisma.BaseEntityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BaseEntityInclude<ExtArgs> | null
+  where?: Prisma.BaseEntityWhereInput
+  orderBy?: Prisma.BaseEntityOrderByWithRelationInput | Prisma.BaseEntityOrderByWithRelationInput[]
+  cursor?: Prisma.BaseEntityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BaseEntityScalarFieldEnum | Prisma.BaseEntityScalarFieldEnum[]
 }
 
 /**

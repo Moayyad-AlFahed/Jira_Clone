@@ -92,7 +92,9 @@ export const BaseEntityScalarFieldEnum = {
   description: 'description',
   statusId: 'statusId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById'
 } as const
 
 export type BaseEntityScalarFieldEnum = (typeof BaseEntityScalarFieldEnum)[keyof typeof BaseEntityScalarFieldEnum]
@@ -147,7 +149,8 @@ export const UserScalarFieldEnum = {
   email: 'email',
   hashPassword: 'hashPassword',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

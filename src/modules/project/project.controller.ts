@@ -13,6 +13,7 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -25,6 +26,10 @@ import {
   ProjectResponseDto,
 } from './dto/project-response.dto';
 import { DeleteProjectResponseDto } from './dto/delete-project-response.dto';
+import {
+  ProjectMemberListItemDto,
+  ProjectMemberListResponseDto,
+} from './dto/project-member-list-item.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user/current-user.decorator';
@@ -45,6 +50,7 @@ export class ProjectController {
     @Body() createProjectDto: CreateProjectDto,
     @CurrentUser('id') userId: number,
   ) {
+    console.log('userId', userId);
     return this.projectService.create(createProjectDto, userId);
   }
 
@@ -57,6 +63,30 @@ export class ProjectController {
     @Query() query: PaginationQueryDto,
   ) {
     return this.projectService.findAll(userId, query);
+  }
+
+  @Get(':id/members')
+  @ApiOperation({
+    summary: 'List project members',
+    description:
+      'Returns collaborators on the project. Requires JWT and project membership. Non-members receive 404.',
+  })
+  @ApiResponse({ status: 200, type: ProjectMemberListResponseDto })
+  @ApiResponse({ status: 401, description: 'Authentication required.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Project not found or caller is not a member.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Project identifier.',
+    example: 1,
+  })
+  listMembers(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.projectService.listMembers(id, userId);
   }
 
   @Get(':id/test-membership')
