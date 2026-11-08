@@ -16,6 +16,10 @@ The project models a SaaS-style collaboration platform where users can:
 
 The current implementation focuses on the backend foundation and authenticated project operations. The schema and architecture already include sprint and task entities, but the primary live endpoints in the codebase are the authentication flow and project management APIs.
 
+## Soft delete
+
+Project, sprint, and task content uses `BaseEntity.deletedAt`; user accounts use `User.deletedAt`. See [docs/SOFT_DELETE.md](docs/SOFT_DELETE.md) for endpoints, query rules, and restore flows.
+
 ## Tech stack
 
 - NestJS 11

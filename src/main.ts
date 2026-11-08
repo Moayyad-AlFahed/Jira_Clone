@@ -1,6 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -46,10 +43,6 @@ async function bootstrap() {
     SwaggerModule.createDocument(app, swagger),
     {
       customSiteTitle: 'Jira Clone API Docs',
-      customCss: readFileSync(
-        join(__dirname, '..', 'swagger-dark.css'),
-        'utf8',
-      ),
       swaggerOptions: {
         persistAuthorization: true,
         displayRequestDuration: true,

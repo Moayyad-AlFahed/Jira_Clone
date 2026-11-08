@@ -13,6 +13,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
+import { RestoreUserResponseDto } from '../user/dto/restore-user-response.dto';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -84,5 +85,25 @@ export class AuthController {
   })
   async refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refresh(dto.refreshToken);
+  }
+
+  @Post('restore-account')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Restore a soft-deleted account',
+    description:
+      'Verifies email and password for a soft-deleted user, clears deletedAt, and returns a safe user profile. Does not issue tokens; use login afterward.',
+  })
+  @ApiResponse({
+    status: 200,
+    type: RestoreUserResponseDto,
+    description: 'Account restored successfully.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid credentials or account is not deleted.',
+  })
+  async restoreAccount(@Body() dto: LoginDto) {
+    return this.authService.restoreAccount(dto);
   }
 }
