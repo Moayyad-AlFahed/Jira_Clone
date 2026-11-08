@@ -11,6 +11,7 @@ import { RedisService } from 'src/cache/redis/redis.service';
 import { createHash } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -113,7 +114,7 @@ export class AuthService {
     throw new UnauthorizedException('Invalid refresh token');
   }
 
-  const user = await this.userService.findById(payload.sub);
+  const user = await this.userService.findActiveById(payload.sub);
 
   if (!user) {
     throw new UnauthorizedException('User no longer exists');
@@ -153,6 +154,10 @@ export class AuthService {
 
   private hashToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
+  }
+
+  async restoreAccount(dto: LoginDto) {
+    return this.userService.restoreWithCredentials(dto);
   }
 
   private getRefreshTokenKey(userId: number, jti: string): string {

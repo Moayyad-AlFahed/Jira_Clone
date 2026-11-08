@@ -63,6 +63,26 @@ export class RedisService implements OnModuleDestroy {
     await this.client.del(key);
   }
 
+  /** Deletes all keys matching a Redis SCAN pattern (e.g. `auth:refresh:42:*`). */
+  async deleteByPattern(pattern: string): Promise<void> {
+    if (!this.enabled || !this.client) return;
+
+    let cursor = '0';
+    do {
+      const [nextCursor, keys] = await this.client.scan(
+        cursor,
+        'MATCH',
+        pattern,
+        'COUNT',
+        100,
+      );
+      cursor = nextCursor;
+      if (keys.length > 0) {
+        await this.client.del(...keys);
+      }
+    } while (cursor !== '0');
+  }
+
   async onModuleDestroy(): Promise<void> {
     if (this.client) await this.client.quit();
   }

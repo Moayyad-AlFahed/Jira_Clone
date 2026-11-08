@@ -16,6 +16,17 @@ import {
 } from './dto/project-response.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { paginate } from '../../common/http/pagination';
+import {
+  activeBaseEntityWhere,
+  activeUserWhere,
+} from '../../common/prisma/soft-delete.where';
+import {
+  collectProjectChildBaseEntityIds,
+  restoreBaseEntity,
+  restoreManyBaseEntities,
+  softDeleteBaseEntity,
+  softDeleteManyBaseEntities,
+} from '../../common/prisma/soft-delete.operations';
 
 const projectDetailsInclude = {
   baseEntity: { include: { status: true } },
@@ -105,16 +116,17 @@ export class ProjectService {
     const search = query.search?.trim();
     const where: Prisma.ProjectWhereInput = {
       users: { some: { userId } },
-      ...(search
-        ? {
-            baseEntity: {
+      baseEntity: {
+        ...activeBaseEntityWhere,
+        ...(search
+          ? {
               OR: [
                 { name: { contains: search, mode: 'insensitive' } },
                 { description: { contains: search, mode: 'insensitive' } },
               ],
-            },
-          }
-        : {}),
+            }
+          : {}),
+      },
     };
 
     const [projects, total] = await Promise.all([
@@ -137,10 +149,12 @@ export class ProjectService {
   }
 
   async findOne(id: number, userId: number): Promise<ProjectResponseDto> {
-    await this.ensureProjectMember(id, userId);
+    if (!(await this.ensureProjectMember(id, userId))) {
+      throw new NotFoundException('Project not found');
+    }
 
-    const project = await this.prisma.project.findUnique({
-      where: { id },
+    const project = await this.prisma.project.findFirst({
+      where: { id, baseEntity: activeBaseEntityWhere },
       include: projectDetailsInclude,
     });
 
@@ -151,12 +165,32 @@ export class ProjectService {
     return this.toResponse(project);
   }
 
+  async testProjectMembership(projectId: number, userId: number) {
+    return { isMember: await this.ensureProjectMember(projectId, userId) };
+  }
+
   async update(
     id: number,
     updateProjectDto: UpdateProjectDto,
     userId: number,
   ): Promise<ProjectResponseDto> {
-    const project = await this.ensureProjectMember(id, userId);
+    if (!(await this.ensureProjectMember(id, userId))) {
+      throw new ForbiddenException(`You'r not a member in this project`);
+    }
+    if (!(await this.ensureOwnerProject(id, userId))) {
+      throw new ForbiddenException(
+        'Only project owners can perform this action',
+      );
+    }
+
+    const project = await this.prisma.project.findFirst({
+      where: { id, baseEntity: activeBaseEntityWhere },
+      select: { baseEntityId: true },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
 
     await this.prisma.baseEntity.update({
       where: { id: project.baseEntityId },
@@ -167,14 +201,63 @@ export class ProjectService {
   }
 
   async remove(id: number, userId: number) {
-    const project = await this.ensureProjectMember(id, userId);
+    if (!(await this.ensureOwnerProject(id, userId))) {
+      throw new ForbiddenException('Action not allowed!');
+    }
 
-    await this.prisma.$transaction([
-      this.prisma.project.delete({ where: { id } }),
-      this.prisma.baseEntity.delete({ where: { id: project.baseEntityId } }),
-    ]);
+    const project = await this.prisma.project.findFirst({
+      where: { id, baseEntity: activeBaseEntityWhere },
+      select: { baseEntityId: true },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      const childBaseEntityIds = await collectProjectChildBaseEntityIds(
+        tx,
+        id,
+      );
+      await softDeleteManyBaseEntities(tx, childBaseEntityIds, userId);
+      await softDeleteBaseEntity(tx, project.baseEntityId, userId);
+    });
 
     return { message: 'Project deleted successfully' };
+  }
+
+  async restore(id: number, userId: number): Promise<ProjectResponseDto> {
+    if (!(await this.ensureOwnerProjectIncludingDeleted(id, userId))) {
+      throw new ForbiddenException('Only project owners can restore a project');
+    }
+
+    const project = await this.prisma.project.findUnique({
+      where: { id },
+      select: { baseEntityId: true },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Deleted project not found');
+    }
+
+    const baseEntity = await this.prisma.baseEntity.findUnique({
+      where: { id: project.baseEntityId },
+    });
+
+    const deletedAt = (baseEntity as { deletedAt?: Date | null } | null)
+      ?.deletedAt;
+
+    if (!deletedAt) {
+      throw new NotFoundException('Deleted project not found');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      const childBaseEntityIds = await collectProjectChildBaseEntityIds(tx, id);
+      await restoreManyBaseEntities(tx, childBaseEntityIds);
+      await restoreBaseEntity(tx, project.baseEntityId);
+    });
+
+    return this.findOne(id, userId);
   }
 
   async assignUser(
@@ -182,7 +265,9 @@ export class ProjectService {
     assignProjectUserDto: AssignProjectUserDto,
     currentUserId: number,
   ): Promise<ProjectResponseDto> {
-    await this.ensureProjectMember(projectId, currentUserId);
+    if (!(await this.ensureProjectMember(projectId, currentUserId))) {
+      throw new NotFoundException('Project not found');
+    }
 
     const existingMembership = await this.prisma.projectUsers.findUnique({
       where: {
@@ -194,12 +279,21 @@ export class ProjectService {
       select: { role: true },
     });
 
+    const isOwnerOrAdmin =
+      existingMembership.role === 'ADMIN' || existingMembership.role === 'OWNER'
+        ? true
+        : false;
+
     if (existingMembership?.role === ProjectRole.OWNER) {
       throw new ForbiddenException('Project owner role cannot be changed');
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: assignProjectUserDto.userId },
+    if(!isOwnerOrAdmin) {
+      throw new ForbiddenException('Action not allowed');
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: { id: assignProjectUserDto.userId, ...activeUserWhere },
     });
 
     if (!user) {
@@ -226,26 +320,67 @@ export class ProjectService {
     return this.findOne(projectId, currentUserId);
   }
 
-  private async ensureProjectMember(projectId: number, userId: number) {
+  private async ensureProjectMember(
+    projectId: number,
+    userId: number,
+  ): Promise<boolean> {
     const membership = await this.prisma.projectUsers.findUnique({
       where: { projectId_userId: { projectId, userId } },
       select: { projectId: true },
     });
 
+    
     if (!membership) {
-      throw new NotFoundException('Project not found');
+      return false;
     }
 
-    const project = await this.prisma.project.findUnique({
-      where: { id: projectId },
+    const project = await this.prisma.project.findFirst({
+      where: { id: projectId, baseEntity: activeBaseEntityWhere },
       select: { baseEntityId: true },
     });
 
     if (!project) {
-      throw new NotFoundException('Project not found');
+      return false;
     }
 
-    return project;
+    return true;
+  }
+
+  /** Membership check that still resolves when the project BaseEntity is soft-deleted (for restore). */
+  private async ensureOwnerProjectIncludingDeleted(
+    projectId: number,
+    userId: number,
+  ): Promise<boolean> {
+    const membership = await this.prisma.projectUsers.findUnique({
+      where: { projectId_userId: { projectId, userId } },
+      select: { role: true },
+    });
+
+    if (!membership) {
+      return false;
+    }
+
+    return membership.role === ProjectRole.OWNER;
+  }
+
+  private async ensureOwnerProject(
+    projectId: number,
+    userId: number,
+  ): Promise<boolean> {
+    if (!(await this.ensureProjectMember(projectId, userId))) {
+      return false;
+    }
+
+    const membership = await this.prisma.projectUsers.findUnique({
+      where: { projectId_userId: { projectId, userId } },
+      select: { role: true },
+    });
+
+    if (!membership) {
+      return false;
+    }
+
+    return membership.role === ProjectRole.OWNER;
   }
 
   private toResponse(project: ProjectWithDetails): ProjectResponseDto {

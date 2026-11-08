@@ -24,6 +24,7 @@ import {
   PaginatedProjectResponseDto,
   ProjectResponseDto,
 } from './dto/project-response.dto';
+import { DeleteProjectResponseDto } from './dto/delete-project-response.dto';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user/current-user.decorator';
@@ -58,6 +59,19 @@ export class ProjectController {
     return this.projectService.findAll(userId, query);
   }
 
+  @Get(':id/test-membership')
+  @ApiOperation({
+    summary: 'Test project membership for the authenticated user',
+  })
+  @ApiResponse({ status: 200, description: 'The user is a project member.' })
+  @ApiResponse({ status: 404, description: 'Project not found.' })
+  testMembership(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.projectService.testProjectMembership(id, userId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get one project' })
   @ApiResponse({ status: 200, type: ProjectResponseDto })
@@ -83,14 +97,35 @@ export class ProjectController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete one project' })
-  @ApiResponse({ status: 200, description: 'Project deleted successfully.' })
+  @ApiOperation({
+    summary: 'Soft-delete one project',
+    description:
+      'Marks the project and its sprint/task BaseEntity rows as deleted. Requires project OWNER role. Rows remain in the database.',
+  })
+  @ApiResponse({ status: 200, type: DeleteProjectResponseDto })
+  @ApiResponse({ status: 403, description: 'Only owners may delete projects.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
   remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('id') userId: number,
   ) {
     return this.projectService.remove(id, userId);
+  }
+
+  @Post(':id/restore')
+  @ApiOperation({
+    summary: 'Restore a soft-deleted project',
+    description:
+      'Clears deletedAt on the project BaseEntity and related sprint/task BaseEntity rows. Requires OWNER membership (including on deleted projects).',
+  })
+  @ApiResponse({ status: 200, type: ProjectResponseDto })
+  @ApiResponse({ status: 403, description: 'Only owners may restore projects.' })
+  @ApiResponse({ status: 404, description: 'Deleted project not found.' })
+  restore(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.projectService.restore(id, userId);
   }
 
   @Post(':id/users')

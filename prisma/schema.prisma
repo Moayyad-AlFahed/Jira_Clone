@@ -30,16 +30,21 @@ model Status {
 }
 
 model BaseEntity {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String?
   statusId    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  status      Status?  @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  deletedById Int?
+  status      Status?   @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  deletedBy   User?     @relation("BaseEntityDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
   project     Project?
   sprint      Sprint?
   task        Task?
+
+  @@index([deletedAt])
 }
 
 model Project {
@@ -87,14 +92,20 @@ model Task {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  username     String         @unique()        @default("")
-  firstName    String         @default("")
-  lastName     String         @default("")
-  email        String         @unique()  
-  hashPassword String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  projects     ProjectUsers[]
-  tasks        Task[]
+  id                  Int            @id @default(autoincrement())
+  username            String         @default("")
+  firstName           String         @default("")
+  lastName            String         @default("")
+  email               String
+  hashPassword        String
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  deletedAt           DateTime?
+  projects            ProjectUsers[]
+  tasks               Task[]
+  deletedBaseEntities BaseEntity[]   @relation("BaseEntityDeletedBy")
+
+  @@index([deletedAt])
+  @@index([email])
+  @@index([username])
 }
